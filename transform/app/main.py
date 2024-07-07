@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Response, HTTPException
+import requests
 from contextlib import asynccontextmanager
 from redis import Redis
 import httpx
@@ -8,7 +9,7 @@ import json
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    app.state.redis = Redis(host='localhost', port=6379)
+    app.state.redis = Redis(host='redis', port=6379)
     app.state.http_client = httpx.AsyncClient()
     yield
     app.state.redis.close()
@@ -25,16 +26,16 @@ async def get_precipitacion_trans():
     result = app.state.redis.set('precipitacion_trans', df_json)
 
     if result:
-        #
-        # Código para llamado a servicio de carga
-        #
-        return {"result": "Ok"}
+        response = requests.get('http://load:90/load/')
+        if response.status_code == 204:
+            return Response(status_code=204)
+        else:
+            return Response(content='f{"result": {response.text}}', media_type="application/json", status_code=207)
     else:
         return Response(content='{"result": "Recibido, pero no procesado"}', media_type="application/json", status_code=207)
 
 def precipitacion_trans(redis_json):
     df = pd.DataFrame.from_records(redis_json)
-    df.info()
     #Reemplazar valores <nil> por NaN, para borrar las filas posteriormente
     df.replace('<nil>', np.nan, inplace=True)
     df = df.dropna(axis=0, how='any')
@@ -48,5 +49,4 @@ def precipitacion_trans(redis_json):
 
     #Se elimina la columna fecha
     df.drop(columns=['fechaobservacion'], inplace=True)
-
     return df

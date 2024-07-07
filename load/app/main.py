@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Response
 from database import engine, SessionLocal
 import models
 from sqlalchemy import func
@@ -38,6 +38,7 @@ async def load_precipitacion(db: db_dependency):
     jsonio = io.BytesIO(value)
     df = pd.read_json(jsonio, orient='split')
     df.to_sql('precipitaciones', con=engine, if_exists='replace', index=False)
+    return Response(status_code=204)
 
 @app.get("/precipitaciones_tran/")
 async def get_precipitaciones_tran(db: db_dependency):

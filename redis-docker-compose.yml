@@ -16,7 +16,24 @@ services:
       - 8001:8001
     volumes:
       - redis_insight_volume_data:/db
-
+  extract:
+      image: ext-docker
+      container_name: ext-docker-container
+      restart: always
+      ports:
+        - 60:60
+  transform:
+      image: trans-docker
+      container_name: trans-docker-container
+      restart: always
+      ports:
+        - 70:70
+  load:
+      image: load-docker
+      container_name: load-docker-container
+      restart: always
+      ports:
+        - 90:90
 volumes:
   redis_volume_data:
   redis_insight_volume_data:
