@@ -26,7 +26,7 @@ async def get_precipitacion_trans():
     result = app.state.redis.set('precipitacion_trans', df_json)
 
     if result:
-        response = requests.get('http://load:90/load/')
+        response = requests.get('http://load:9000/load/')
         if response.status_code == 204:
             return Response(status_code=204)
         else:

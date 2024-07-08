@@ -40,13 +40,13 @@ async def get_precipitacion():
         value = response.json()
         data_str = json.dumps(value)
         app.state.redis.set("precipitacion", data_str)
-        response = requests.get('http://transform:70/precipitacion_trans/')
+        response = requests.get('http://transform:7000/precipitacion_trans/')
         if response.status_code == 204:
             return json.loads(data_str)
         else:
             return Response(content='f{"result": {response.text}}', media_type="application/json", status_code=207)
     return json.loads(value)
 
-@app.get("/precipitaciones_tran/")
-async def get_precipitaciones_tran(db: db_dependency):
-    return db.query(models.Precipitaciones).all()
+# @app.get("/precipitaciones_tran/")
+# async def get_precipitaciones_tran(db: db_dependency):
+#     return db.query(models.Precipitaciones).all()

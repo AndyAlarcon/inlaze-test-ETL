@@ -18,22 +18,22 @@ services:
       - redis_insight_volume_data:/db
   extract:
       image: ext-docker
-      container_name: ext-docker-container
+      container_name: extract
       restart: always
       ports:
-        - 60:60
+        - 6200:6200
   transform:
       image: trans-docker
-      container_name: trans-docker-container
+      container_name: transform
       restart: always
       ports:
-        - 70:70
+        - 7000:7000
   load:
       image: load-docker
-      container_name: load-docker-container
+      container_name: load
       restart: always
       ports:
-        - 90:90
+        - 9000:9000
 volumes:
   redis_volume_data:
   redis_insight_volume_data:
